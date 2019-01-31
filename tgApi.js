@@ -7,12 +7,13 @@ const https = require('https');
  * 
  * @see https://core.telegram.org/bots/api#available-methods
  * 
- * @param {*} method telegram API method to be called
+ * @param {string} method telegram API method to be called
  * @param {*} message message to be sent to the API
- * 
+ * @param {boolean} ignoreResponse resolve the promise as soon as the response is received, without reading the response data.
+ 
  * @returns a Promise that resolves the returned telegram api response or rejects the http error.
  */
-async function tgApi(method, message) {
+async function tgApi(method, message, ignoreResponse) {
 
 	const path = `/bot${token}/${method}`;
 
@@ -36,6 +37,13 @@ async function tgApi(method, message) {
 		const req = https.request(options, (resp) => {
 
 			console.info('Telegram API response:', resp.statusCode);
+			
+			// Sometimes we do not need the response
+			if (ignoreResponse) {
+				console.info('Response ignored');
+				resolve(null);
+				return;
+			}
 
 			var rawData = [];
 
